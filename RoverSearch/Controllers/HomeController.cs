@@ -26,6 +26,38 @@ public class HomeController : Controller
 
         return View(results);
     }
+    public IActionResult ViewEpisode(string filename)
+    {
+        if (string.IsNullOrEmpty(filename))
+            return NotFound();
+
+        string path = Path.Combine(".\\Data\\", filename);
+        if (!System.IO.File.Exists(path))
+            return NotFound();
+
+        string content = System.IO.File.ReadAllText(path);
+
+        // Parse metadata (same logic as SearchService)
+        var lines = content.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        string title = lines.FirstOrDefault(l => l.StartsWith("title:", StringComparison.OrdinalIgnoreCase))?
+                          .Replace("title:", "", StringComparison.OrdinalIgnoreCase).Trim() ?? "Unknown Title";
+        string season = lines.FirstOrDefault(l => l.StartsWith("season:", StringComparison.OrdinalIgnoreCase))?
+                          .Replace("season:", "", StringComparison.OrdinalIgnoreCase).Trim() ?? "?";
+        string episode = lines.FirstOrDefault(l => l.StartsWith("episode:", StringComparison.OrdinalIgnoreCase))?
+                          .Replace("episode:", "", StringComparison.OrdinalIgnoreCase).Trim() ?? "?";
+
+        string scriptBody = string.Join('\n', lines.SkipWhile(l => !string.IsNullOrWhiteSpace(l)).Skip(1));
+
+        var model = new EpisodeViewModel
+        {
+            Title = title,
+            Season = season,
+            Episode = episode,
+            Script = scriptBody
+        };
+
+        return View(model);
+    }
 
     public IActionResult Privacy()
     {

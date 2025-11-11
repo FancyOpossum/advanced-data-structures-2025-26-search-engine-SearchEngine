@@ -1,0 +1,17 @@
+﻿@model RoverSearch.Models.EpisodeViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-5">
+    <h2>@Model.Title</h2>
+    <p class="text-muted">Season @Model.Season, Episode @Model.Episode</p>
+    <hr />
+
+    <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace;">
+@Model.Script
+    </pre>
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">Back to Search</a>
+</div>
